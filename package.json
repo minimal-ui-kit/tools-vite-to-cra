@@ -1,6 +1,6 @@
 {
   "name": "@minimals/vite-to-cra",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Migrate your Vite.js projects to CRA for Minimal UI",
   "main": "index.js",
   "repository": {
