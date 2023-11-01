@@ -5,5 +5,5 @@ Codemods to help you migrate your existing codebase to CRA (For use only in [Min
 Currently available codemods:
 
 ```bash
-npx vite-to-cra
+npx @minimals/vite-to-cra@latest
 ```
