@@ -1,35 +1,36 @@
 {
-	"name": "migrate-to-vite",
-	"version": "1.1.2",
-	"description": "Migrate your projects to Vite using pre-built codemods",
-	"main": "index.js",
-	"scripts": {
-		"bundle-packages": "tsup",
-		"bundle-packages:watch": "tsup --watch",
-		"pre-publish": "npm run bundle-packages && node scripts/pre-publish",
-		"publish-package": "npm run pre-publish && cd ./dist && npm publish"
-	},
-	"keywords": [
-		"Codemod",
-		"Vite",
-		"CRA",
-		"Migration"
-	],
-	"repository": "https://github.com/deve-sh/Migrate-To-Vite",
-	"readme": "https://github.com/deve-sh/Migrate-To-Vite/blob/main/README.md",
-	"author": "Devesh Kumar",
-	"license": "MIT",
-	"devDependencies": {
-		"@types/prettier": "^2.7.2",
-		"@types/recursive-readdir": "^2.2.1",
-		"tsup": "^6.7.0"
-	},
-	"dependencies": {
-		"chalk": "^4.1.0",
-		"enquirer": "^2.3.6",
-		"recursive-readdir": "^2.2.3"
-	},
-	"bin": {
-		"migrate-to-vite": "./index.js"
-	}
+  "name": "@minimal-kit/vite-to-cra",
+  "version": "1.0.0",
+  "description": "Migrate your Vite.js projects to CRA",
+  "main": "index.js",
+  "repository": "https://github.com/minimal-ui-kit/tools-vite-to-cra",
+  "readme": "https://github.com/minimal-ui-kit/tools-vite-to-cra/blob/main/README.md",
+  "author": "Minimals",
+  "license": "MIT",
+  "keywords": [
+    "Codemod",
+    "Vite",
+    "CRA",
+    "Migration"
+  ],
+  "scripts": {
+    "bundle-packages": "tsup",
+    "bundle-packages:watch": "tsup --watch",
+    "pre-publish": "npm run bundle-packages && node scripts/pre-publish",
+    "publish-package": "npm run pre-publish && cd ./dist && npm publish",
+    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
+  },
+  "devDependencies": {
+    "@types/prettier": "^3.0.0",
+    "@types/recursive-readdir": "^2.2.3",
+    "tsup": "^7.2.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "enquirer": "^2.4.1",
+    "recursive-readdir": "^2.2.3"
+  },
+  "bin": {
+    "vite-to-cra": "./index.js"
+  }
 }
