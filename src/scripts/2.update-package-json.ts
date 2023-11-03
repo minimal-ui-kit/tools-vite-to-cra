@@ -1,6 +1,6 @@
 import fs from 'fs';
-import path from 'path';
 import chalk from 'chalk';
+
 import { getFile } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
@@ -37,20 +37,16 @@ const NEW_ATTRIBUTE = {
 // ----------------------------------------------------------------------
 
 export function updatePackageJSON() {
-  console.log(chalk.blue('4.Updating'), chalk.magenta('package.json'));
+  console.log(chalk.blue(`📦 Updating ${chalk.magenta('package.json')}.`));
 
   const { _path, _content } = getFile('./package.json');
 
   let packageJSON = JSON.parse(_content);
 
-  delete packageJSON.devDependencies['vite'];
-  delete packageJSON.devDependencies['vite-plugin-checker'];
-  delete packageJSON.devDependencies['@vitejs/plugin-react-swc'];
   delete packageJSON.type;
 
   packageJSON.name = packageJSON.name.replace('vite', 'cra');
   packageJSON.description = packageJSON.description.replace('Vite', 'Cra');
-
   packageJSON.scripts = UPDATE_SCRIPTS;
 
   packageJSON = Object.assign(packageJSON, NEW_ATTRIBUTE);

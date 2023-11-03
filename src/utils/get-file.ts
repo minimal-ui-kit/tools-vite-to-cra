@@ -13,3 +13,13 @@ export function getFile(filePath: string) {
     _content,
   };
 }
+
+// ----------------------------------------------------------------------
+
+export function fileExists(filePath: string) {
+  const _path = path.resolve(process.cwd(), filePath);
+
+  const isFileExists = fs.existsSync(_path);
+
+  return isFileExists;
+}

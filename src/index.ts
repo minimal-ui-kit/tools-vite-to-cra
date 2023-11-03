@@ -2,6 +2,8 @@
 
 import { migrateViteToCRA } from './vite-to-cra';
 
+// ----------------------------------------------------------------------
+
 async function runCodemod() {
   return migrateViteToCRA();
 }

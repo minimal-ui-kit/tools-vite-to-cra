@@ -1,10 +1,11 @@
 import fs from 'fs';
 import chalk from 'chalk';
+
 import { getFile } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
 
-const template = () => `{
+const template = `{
   "compilerOptions": {
     "baseUrl": ".",
     "target": "es5",
@@ -42,16 +43,14 @@ const template = () => `{
 }
 `;
 
-export function updateTSConfigFile(compile: 'TypeScript' | 'JavaScript') {
-  console.log(
-    chalk.blue('5.Updating'),
-    chalk.magenta(compile === 'TypeScript' ? 'tsconfig.json' : '-')
-  );
+// ----------------------------------------------------------------------
 
-  if (compile === 'TypeScript') {
-    const { _path } = getFile('./tsconfig.json');
+export function updateTSConfigFile() {
+  console.log(chalk.blue(`🔖 Updating ${chalk.magenta('tsconfig.json')}.`));
 
-    fs.rmSync(_path);
-    fs.writeFileSync(_path, template());
-  }
+  const { _path } = getFile('./tsconfig.json');
+
+  fs.rmSync(_path);
+
+  fs.writeFileSync(_path, template);
 }

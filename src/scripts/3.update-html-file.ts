@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-import { getFile } from '../utils/get-file';
+
 import { multiReplace } from '../utils/multi-replace';
+import { getFile, fileExists } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +23,13 @@ const REPLACEMENTS = {
 // ----------------------------------------------------------------------
 
 export function updateHtmlFile() {
-  console.log(chalk.blue('3.Updating'), chalk.magenta('index.html'));
+  console.log(chalk.blue(`📄 Moving & updating ${chalk.magenta('index.html')} to public folder.`));
+
+  const isFileExists = fileExists('./index.html');
+
+  if (!isFileExists) {
+    return;
+  }
 
   const { _path, _content } = getFile('./index.html');
 

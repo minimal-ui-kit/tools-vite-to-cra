@@ -1,12 +1,22 @@
 import fs from 'fs';
-import recursive from 'recursive-readdir';
 import chalk from 'chalk';
-import { getFile } from '../utils/get-file';
+
+import { getFile, fileExists } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
 
-export async function updateEnvVariables() {
-  console.log(chalk.blue('1.Updating environment variables'));
+type Props = {
+  isTypeScript: boolean;
+};
+
+export function updateEnvVariables({ isTypeScript }: Props) {
+  const isFileExists = fileExists('./.env');
+
+  if (!isFileExists) {
+    return;
+  }
+
+  console.log(chalk.blue(`🔑 Updating ${chalk.magenta('.env')}.`));
 
   // Update .env
   const { _path: envPath, _content: envContent } = getFile('./.env');
@@ -15,22 +25,16 @@ export async function updateEnvVariables() {
 
   fs.writeFileSync(envPath, updatedContent);
 
+  console.log(
+    chalk.blue(
+      `🛠️  Updating ${chalk.magenta(`./src/config-global.${isTypeScript ? 'ts' : 'js'}`)}.`
+    )
+  );
+
   // Update variables
-  const files = await recursive('./');
+  const { _path, _content } = getFile(`./src/config-global.${isTypeScript ? 'ts' : 'js'}`);
 
-  files.forEach((file) => {
-    const isNotJSFile = !file.includes('.ts') && !file.includes('.js');
+  const _updatedContent = _content.replace(/import.meta.env.VITE_/g, 'process.env.REACT_APP_');
 
-    const isDirectory = fs.statSync(file).isDirectory();
-
-    if (isDirectory || isNotJSFile) return;
-
-    let content = fs.readFileSync(file, 'utf-8');
-
-    content = content.replace(/import.meta.env.VITE_/g, 'process.env.REACT_APP_');
-
-    content = content.replace(/import.meta.env.MODE/g, 'process.env.NODE_ENV');
-
-    fs.writeFileSync(file, content);
-  });
+  fs.writeFileSync(_path, _updatedContent);
 }

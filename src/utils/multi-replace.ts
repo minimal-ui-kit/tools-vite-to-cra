@@ -1,4 +1,6 @@
-export function multiReplace(input, replacements) {
+/* eslint-disable */
+
+export function multiReplace(input: string, replacements: Record<string, string>): string {
   let output = input;
 
   for (const pattern in replacements) {
