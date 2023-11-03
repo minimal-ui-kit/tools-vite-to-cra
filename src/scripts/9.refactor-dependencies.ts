@@ -55,8 +55,4 @@ export function refactorDependencies({ isTypeScript, isFullVersion, kitName }: P
       stdio: 'inherit',
     });
   }
-
-  execSync(`npm run build`, {
-    stdio: 'inherit',
-  });
 }
