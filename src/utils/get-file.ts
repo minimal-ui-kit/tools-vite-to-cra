@@ -1,25 +1,26 @@
 import fs from 'fs';
-import path from 'path';
+import nodePath from 'path';
+
+// ----------------------------------------------------------------------
+
+function resolvePath(filePath: string) {
+  return nodePath.resolve(process.cwd(), filePath);
+}
 
 // ----------------------------------------------------------------------
 
 export function getFile(filePath: string) {
-  const _path = path.resolve(process.cwd(), filePath);
+  const path = resolvePath(filePath);
+  const content = fs.readFileSync(path, 'utf-8');
 
-  const _content = fs.readFileSync(_path, 'utf-8');
-
-  return {
-    _path,
-    _content,
-  };
+  return { path, content };
 }
 
 // ----------------------------------------------------------------------
 
 export function fileExists(filePath: string) {
-  const _path = path.resolve(process.cwd(), filePath);
-
-  const isFileExists = fs.existsSync(_path);
+  const path = resolvePath(filePath);
+  const isFileExists = fs.existsSync(path);
 
   return isFileExists;
 }

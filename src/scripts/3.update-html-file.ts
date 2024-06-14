@@ -1,49 +1,51 @@
-import fs from 'fs';
-import path from 'path';
 import chalk from 'chalk';
+import nodePath from 'path';
+import fs from 'fs/promises';
 
-import { multiReplace } from '../utils/multi-replace';
 import { getFile, fileExists } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
 
-const REPLACEMENTS = {
-  '/manifest.json': '%PUBLIC_URL%/manifest.json',
-  '/favicon/favicon.ico': '%PUBLIC_URL%/favicon/favicon.ico',
-  '/favicon/favicon-16x16.png': '%PUBLIC_URL%/favicon/favicon-16x16.png',
-  '/favicon/favicon-32x32.png': '%PUBLIC_URL%/favicon/favicon-32x32.png',
-  '/favicon/apple-touch-icon.png': '%PUBLIC_URL%/favicon/apple-touch-icon.png',
-  [`<script type="module" src="/src/main.tsx"></script>`]: '',
-  [`<script type="module" src="/src/main.jsx"></script>`]: '',
-  [`<script>`]: '',
-  [`const global = globalThis;`]: '',
-  [`</script>`]: '',
-};
+const FILE_CONTENT = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimal UI Kit</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+`;
+
+const INDEX_HTML = './index.html';
+const PUBLIC_INDEX_HTML = './public/index.html';
 
 // ----------------------------------------------------------------------
 
-export function updateHtmlFile() {
-  console.log(chalk.blue(`📄 Moving & updating ${chalk.magenta('index.html')} to public folder.`));
+export async function updateHtmlFile() {
+  try {
+    console.log(
+      chalk.blue(`📄 Moving & updating ${chalk.magenta('index.html')} to public folder.`)
+    );
 
-  const isFileExists = fileExists('./index.html');
+    const isFileExists = fileExists(INDEX_HTML);
 
-  if (!isFileExists) {
-    return;
+    if (isFileExists) {
+      const { path: filePath } = getFile(INDEX_HTML);
+      // Remove in root
+      await fs.rm(filePath);
+    }
+
+    // Write to public folder
+    const newPath = nodePath.join(process.cwd(), PUBLIC_INDEX_HTML);
+    await fs.writeFile(newPath, FILE_CONTENT);
+  } catch (error) {
+    console.error(chalk.red('Error updating HTML file:'), error);
   }
-
-  const { _path, _content } = getFile('./index.html');
-
-  // Updated
-  const updatedContent = multiReplace(_content, REPLACEMENTS);
-
-  fs.writeFileSync(_path, updatedContent);
-
-  // Copy to public folder
-  fs.copyFileSync(
-    path.resolve(process.cwd(), './index.html'),
-    path.resolve(process.cwd(), './public/index.html')
-  );
-
-  // Remove in root
-  fs.rmSync(_path);
 }

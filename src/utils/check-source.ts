@@ -1,17 +1,13 @@
 import { getFile } from './get-file';
 
+import type { SourceType } from '../types';
+
 // ----------------------------------------------------------------------
 
-type ReturnType = {
-  isTypeScript: boolean;
-  isFullVersion: boolean;
-  kitName: 'Minimal' | 'Zone';
-};
+export function checkSource(): SourceType {
+  const { content } = getFile('./package.json');
 
-export function checkSource(): ReturnType {
-  const { _content } = getFile('./package.json');
-
-  const packageJSON = JSON.parse(_content);
+  const packageJSON = JSON.parse(content);
 
   const isMinimalUI = packageJSON.name.includes('@minimal');
 
@@ -22,8 +18,8 @@ export function checkSource(): ReturnType {
     packageJSON.name.includes('starter') || packageJSON.description.includes('Starter');
 
   return {
-    kitName: isMinimalUI ? 'Minimal' : 'Zone',
     isTypeScript,
     isFullVersion: !isStarterVersion,
+    kitName: isMinimalUI ? 'Minimal' : 'Zone',
   };
 }

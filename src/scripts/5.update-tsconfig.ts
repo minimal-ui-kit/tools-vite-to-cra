@@ -1,11 +1,11 @@
-import fs from 'fs';
 import chalk from 'chalk';
+import fs from 'fs/promises';
 
-import { getFile } from '../utils/get-file';
+import { fileExists } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
 
-const template = `{
+const FILE_CONTENT = `{
   "compilerOptions": {
     "baseUrl": ".",
     "target": "es5",
@@ -30,27 +30,41 @@ const template = `{
     "noFallthroughCasesInSwitch": true,
     "useUnknownInCatchVariables": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
   },
-  "exclude": [
-    "node_modules"
-  ],
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "src/**/*"
+    "src/**/*",
+  ],
+  "exclude": [
+    "node_modules"
   ],
 }
 `;
 
+const FILE_PATH = './tsconfig.json';
+
 // ----------------------------------------------------------------------
 
-export function updateTSConfigFile() {
-  console.log(chalk.blue(`🔖 Updating ${chalk.magenta('tsconfig.json')}.`));
+export async function updateTSConfigFile() {
+  console.log(chalk.blue(`🔖 Updating ${chalk.magenta(FILE_PATH)}.`));
 
-  const { _path } = getFile('./tsconfig.json');
+  if (!fileExists(FILE_PATH)) {
+    console.log(chalk.red(`File ${FILE_PATH} does not exist.`));
+    return;
+  }
 
-  fs.rmSync(_path);
+  try {
+    await fs.rm(FILE_PATH);
+  } catch (error) {
+    console.error(chalk.red(`Error removing file: ${error}`));
+    return;
+  }
 
-  fs.writeFileSync(_path, template);
+  try {
+    await fs.writeFile(FILE_PATH, FILE_CONTENT);
+  } catch (error) {
+    console.error(chalk.red(`Error writing file: ${error}`));
+  }
 }

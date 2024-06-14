@@ -1,17 +1,18 @@
 import fs from 'fs';
 import chalk from 'chalk';
+import { promisify } from 'util';
 
 import { getFile } from '../utils/get-file';
 
 // ----------------------------------------------------------------------
 
 const UPDATE_SCRIPTS = {
-  start: 'react-scripts start',
-  build: 'react-scripts build',
-  eject: 'react-scripts eject',
+  start: 'craco start',
+  build: 'craco build',
   lint: 'eslint "src/**/*.{js,jsx,ts,tsx}"',
   'lint:fix': 'eslint --fix "src/**/*.{js,jsx,ts,tsx}"',
-  prettier: 'prettier --write "src/**/*.{js,jsx,ts,tsx}"',
+  'fm:check': 'prettier --check "src/**/*.{js,jsx,ts,tsx}"',
+  'fm:fix': 'prettier --write "src/**/*.{js,jsx,ts,tsx}"',
   'rm:all': 'rm -rf node_modules .next out dist build',
   're:start': 'yarn rm:all && yarn install && yarn dev',
   're:build': 'yarn rm:all && yarn install && yarn build',
@@ -36,20 +37,26 @@ const NEW_ATTRIBUTE = {
 
 // ----------------------------------------------------------------------
 
-export function updatePackageJSON() {
-  console.log(chalk.blue(`📦 Updating ${chalk.magenta('package.json')}.`));
+const writeFileAsync = promisify(fs.writeFile);
 
-  const { _path, _content } = getFile('./package.json');
+export async function updatePackageJSON() {
+  try {
+    console.log(chalk.blue(`📦 Updating ${chalk.magenta('package.json')}.`));
 
-  let packageJSON = JSON.parse(_content);
+    const { path: packageJsonPath, content: packageJsonContent } = getFile('./package.json');
 
-  delete packageJSON.type;
+    const packageJSON = JSON.parse(packageJsonContent);
 
-  packageJSON.name = packageJSON.name.replace('vite', 'cra');
-  packageJSON.description = packageJSON.description.replace('Vite', 'Cra');
-  packageJSON.scripts = UPDATE_SCRIPTS;
+    delete packageJSON.type;
 
-  packageJSON = Object.assign(packageJSON, NEW_ATTRIBUTE);
+    packageJSON.name = packageJSON.name.replace('vite', 'cra');
+    packageJSON.description = packageJSON.description.replace('Vite', 'Cra');
+    packageJSON.scripts = UPDATE_SCRIPTS;
 
-  fs.writeFileSync(_path, JSON.stringify(packageJSON, null, 2));
+    Object.assign(packageJSON, NEW_ATTRIBUTE);
+
+    await writeFileAsync(packageJsonPath, JSON.stringify(packageJSON, null, 2));
+  } catch (error) {
+    console.error(chalk.red('Error during updating package.json:'), error);
+  }
 }

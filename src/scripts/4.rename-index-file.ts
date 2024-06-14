@@ -1,32 +1,26 @@
-import fs from 'fs';
 import chalk from 'chalk';
+import fs from 'fs/promises';
 
 import { fileExists } from '../utils/get-file';
 
+import type { SourceType } from '../types';
+
 // ----------------------------------------------------------------------
 
-type Props = {
-  isTypeScript: boolean;
-};
+export async function renameIndexFile({ isTypeScript }: SourceType) {
+  const fileExtension = isTypeScript ? 'tsx' : 'jsx';
+  const oldFilePath = `./src/main.${fileExtension}`;
+  const newFilePath = `./src/index.${fileExtension}`;
 
-export function renameIndexFile({ isTypeScript }: Props) {
-  console.log(
-    chalk.blue(
-      `🔧 Renaming ${chalk.magenta(
-        isTypeScript ? 'main.tsx => index.tsx' : 'main.jsx => index.jsx'
-      )}.`
-    )
-  );
+  console.log(chalk.blue(`🔧 Renaming ${chalk.magenta(`${oldFilePath} => ${newFilePath}`)}.`));
 
-  const isFileExists = fileExists('./src/main.jsx') || fileExists('./src/main.tsx');
-
-  if (!isFileExists) {
+  if (!fileExists(oldFilePath)) {
     return;
   }
 
-  if (isTypeScript) {
-    fs.renameSync('./src/main.tsx', './src/index.tsx');
-  } else {
-    fs.renameSync('./src/main.jsx', './src/index.jsx');
+  try {
+    await fs.rename(oldFilePath, newFilePath);
+  } catch (error) {
+    console.error(chalk.red(`Error renaming file: ${error}`));
   }
 }

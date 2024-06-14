@@ -1,36 +1,31 @@
-import fs from 'fs';
-import path from 'path';
 import chalk from 'chalk';
+import nodePath from 'path';
+import fs from 'fs/promises';
 
 import { fileExists } from '../utils/get-file';
 
+import type { SourceType } from '../types';
+
 // ----------------------------------------------------------------------
 
-type Props = {
-  isTypeScript: boolean;
-};
-
-export function removeUnusedFiles({ isTypeScript }: Props) {
+export async function removeUnusedFiles({ isTypeScript }: SourceType) {
   console.log(chalk.blue('🧹 Removing unused files.'));
 
-  const isFileExists =
-    fileExists('./vercel.json') ||
-    fileExists('./vite.config.ts') ||
-    fileExists('./vite.config.js') ||
-    fileExists('./tsconfig.node.json') ||
-    fileExists('./src/vite-env.d.ts');
+  const filesToRemove = isTypeScript
+    ? ['./vite.config.ts', './vercel.json', './tsconfig.node.json', './src/vite-env.d.ts']
+    : ['./vite.config.js', './vercel.json'];
 
-  if (!isFileExists) {
-    return;
-  }
+  // eslint-disable-next-line no-restricted-syntax
+  for (const file of filesToRemove) {
+    const filePath = nodePath.resolve(process.cwd(), file);
 
-  if (isTypeScript) {
-    fs.rmSync(path.resolve(process.cwd(), './vite.config.ts'));
-    fs.rmSync(path.resolve(process.cwd(), './vercel.json'));
-    fs.rmSync(path.resolve(process.cwd(), './tsconfig.node.json'));
-    fs.rmSync(path.resolve(process.cwd(), './src/vite-env.d.ts'));
-  } else {
-    fs.rmSync(path.resolve(process.cwd(), './vite.config.js'));
-    fs.rmSync(path.resolve(process.cwd(), './vercel.json'));
+    if (fileExists(filePath)) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await fs.rm(filePath);
+      } catch (error) {
+        console.error(chalk.red(`Error removing file: ${error}`));
+      }
+    }
   }
 }
